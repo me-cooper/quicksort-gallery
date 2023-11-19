@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Photosort and Fav</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+        body {
+            background: rgb(26, 26, 26);
+        }
+
+
+        .button-30 {
+            align-items: center;
+            appearance: none;
+            background-color: #FCFCFD;
+            border-radius: 4px;
+            border-width: 0;
+            box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+            box-sizing: border-box;
+            color: #36395A;
+            cursor: pointer;
+            display: inline-flex;
+            font-family: "JetBrains Mono", monospace;
+            height: 48px;
+            justify-content: center;
+            line-height: 1;
+            list-style: none;
+            overflow: hidden;
+            padding-left: 16px;
+            padding-right: 16px;
+            position: relative;
+            text-align: left;
+            text-decoration: none;
+            transition: box-shadow .15s, transform .15s;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            white-space: nowrap;
+            will-change: box-shadow, transform;
+            font-size: 18px;
+        }
+
+        .bg-next {
+            color: white;
+            background-color: #1bad47;
+            box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #10682a 0 -3px 0 inset;
+        }
+
+        .bg-prev {
+            color: white;
+            background-color: #eb7515;
+            box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #aa550f 0 -3px 0 inset;
+        }
+
+        .bg-star {
+            color: white;
+            background-color: #1d5de6;
+            box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #14409e 0 -3px 0 inset;
+        }
+
+        .bg-trash {
+            color: white;
+            background-color: #ad1b1b;
+            box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #5e0e0e 0 -3px 0 inset;
+        }
+
+        .button-30:focus {
+            box-shadow: #D6D6E7 0 0 0 1.5px inset, rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+        }
+
+        .button-30:hover {
+            box-shadow: rgba(45, 35, 66, 0.4) 0 4px 8px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+            transform: translateY(-2px);
+        }
+
+        .button-30:active {
+            box-shadow: #D6D6E7 0 3px 7px inset;
+            transform: translateY(2px);
+        }
+
+        #image-container {
+            width: 100%;
+            /* oder eine feste Größe */
+            height: auto;
+            /* oder eine feste Größe */
+            overflow: hidden;
+            /* verhindert das Herausragen des Bildes über den Container */
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        img {
+            border-radius: 10px;
+            box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+            max-height: 60vh;
+            max-width: 90vw;
+            border: 1px solid rgba(50, 50, 93, 0.25);
+            transform-origin: center center;
+        }
+
+        div.textContainer {
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            color: white;
+            font-weight: bold;
+        }
+
+
+        .rotate-left {
+            transform: rotate(30deg) scale(0.8);
+            transition: 0.3s;
+            margin-left: 1000px;
+            cursor: e-resize;
+            opacity: 0;
+            z-index: 10;
+        }
+
+        .rotate-right {
+            transform: rotate(-30deg) scale(0.8);
+            transition: 0.3s;
+            opacity: 0;
+            margin-left: -1000px;
+            cursor: w-resize;
+            z-index: 10;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div style="max-height: 90vh;">
+
+        <div class="textContainer"
+            style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 10px; margin-top: 20px;">
+            <span id="currentNum">0</span>/<span id="totalNum"></span>
+        </div>
+
+        <div id="image-container">
+            <img id="image" src="" alt="Bild wird geladen...">
+        </div>
+
+
+        <div
+            style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px; margin-top: 20px;">
+
+
+            <div style="display: flex; gap: 10px;">
+
+
+                <button id="rotate90ccw" class="button-30">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                        class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z" />
+                        <path
+                            d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z" />
+                    </svg>
+                </button>
+
+
+                <button id="rotate180" class="button-30">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                        class="bi bi-arrows-vertical" viewBox="0 0 16 16">
+                        <path
+                            d="M8.354 14.854a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 13.293V2.707L6.354 3.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 2.707v10.586l1.146-1.147a.5.5 0 0 1 .708.708l-2 2Z" />
+                    </svg>
+                </button>
+
+
+                <button id="rotate90cw" class="button-30">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                        class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z" />
+                        <path
+                            d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z" />
+                    </svg>
+                </button>
+
+
+
+            </div>
+
+
+            <div style="display: flex; gap: 10px;">
+
+                <button id="loadPrevImage" class="button-30 bg-prev" role="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                        class="bi bi-arrow-left-square" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                            d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm11.5 5.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z" />
+                    </svg>
+                </button>
+
+                <button id="deleteImage" class="button-30 bg-trash" role="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                        class="bi bi-trash" viewBox="0 0 16 16">
+                        <path
+                            d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z" />
+                        <path
+                            d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z" />
+                    </svg>
+                </button>
+
+                <button id="favorizeImage" class="button-30 bg-star" role="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                        class="bi bi-star" viewBox="0 0 16 16">
+                        <path
+                            d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z" />
+                    </svg>
+                </button>
+
+                <button id="loadImage" class="button-30 bg-next" role="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                        class="bi bi-arrow-right-square" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                            d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm4.5 5.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z" />
+                    </svg>
+                </button>
+            </div>
+
+
+
+        </div>
+
+
+    </div>
+
+    <script>
+        let currentImagePath = '';
+
+        document.getElementById('loadImage').addEventListener('click', function () {
+            fetch('/getImage/next')
+                .then(response => response.json())
+                .then(data => {
+                    const imageElement = document.getElementById('image');
+                    imageElement.src = data.imgData;
+                    currentImagePath = data.path;
+
+                    imageElement.classList.remove('rotate-left');
+                    imageElement.classList.remove('rotate-right');
+
+                    updateCounters(data.current, data.total);
+
+                })
+                .catch(err => console.error(err));
+        });
+
+
+
+        document.getElementById('loadPrevImage').addEventListener('click', function () {
+
+            fetch('/getImage/prev')
+                .then(response => response.json())
+                .then(data => {
+                    const imageElement = document.getElementById('image');
+                    imageElement.src = data.imgData;
+                    currentImagePath = data.path;
+
+
+                    imageElement.classList.remove('rotate-left');
+                    imageElement.classList.remove('rotate-right');
+
+                    updateCounters(data.current, data.total);
+
+                })
+                .catch(err => console.error(err));
+        });
+
+
+        function updateCounters(currentNum, totalNum) {
+            document.getElementById('currentNum').innerText = currentNum;
+            document.getElementById('totalNum').innerText = totalNum;
+        }
+
+
+
+        document.getElementById('favorizeImage').addEventListener('click', function () {
+            if (currentImagePath) {
+                fetch('/favorizeImage', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ imagePath: currentImagePath })
+                })
+                    .then(response => response.text())
+                    .then(data => {
+                        document.getElementById('loadImage').click();
+                    })
+                    .catch(err => console.error(err));
+            }
+        });
+
+
+        document.getElementById('deleteImage').addEventListener('click', function () {
+            if (currentImagePath) {
+                fetch('/deleteImage', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ imagePath: currentImagePath })
+                })
+                    .then(response => response.text())
+                    .then(data => {
+                        document.getElementById('loadImage').click();
+                    })
+                    .catch(err => console.error(err));
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", (event) => {
+
+            document.getElementById('loadImage').click();
+
+            document.onkeydown = (e) => {
+                e = e || window.event;
+
+                console.log(e.keyCode);
+
+                if (e.keyCode === 37) {
+                    // ARROW LEFT
+                    document.getElementById('loadPrevImage').click()
+                }
+
+                if (e.keyCode === 38) {
+                    // ARROW UP
+                    document.getElementById('favorizeImage').click();
+                }
+
+                if (e.keyCode === 39) {
+                    // ARROW RIGHT
+                    document.getElementById('loadImage').click();
+                }
+
+                if (e.keyCode === 8 || e.keyCode === 46) {
+                    // DEL or BACKSPACE
+                    document.getElementById('deleteImage').click()
+                }
+
+
+            }
+
+        });
+
+
+
+        document.getElementById('rotate180').addEventListener('click', function () {
+
+            const imageElement = document.getElementById('image');
+            rotateImage(imageElement, 180);
+        });
+
+        document.getElementById('rotate90cw').addEventListener('click', function () {
+
+            const imageElement = document.getElementById('image');
+            rotateImage(imageElement, 90);
+        });
+
+
+        document.getElementById('rotate90ccw').addEventListener('click', function () {
+            const imageElement = document.getElementById('image');
+            rotateImage(imageElement, -90);
+        });
+
+
+
+
+        function rotateServerImage(rotationAngle) {
+            fetch('/rotateImage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ imagePath: currentImagePath, angle: rotationAngle })
+            })
+                .then(response => response.text())
+                .then(data => {
+
+                })
+                .catch(err => console.error(err));
+        }
+
+
+
+        function rotateImage(inputImage, angle) {
+
+            const outputImage = document.createElement("canvas");
+
+            if (Math.abs(angle) % 180 === 90) {
+                outputImage.width = inputImage.naturalHeight;
+                outputImage.height = inputImage.naturalWidth;
+            } else {
+                outputImage.width = inputImage.naturalWidth;
+                outputImage.height = inputImage.naturalHeight;
+            }
+
+            const ctx = outputImage.getContext("2d");
+
+            if (angle === 90) {
+                ctx.rotate(angle * Math.PI / 180);
+                ctx.translate(0, -outputImage.width);
+            } else if (angle === -90) {
+                ctx.rotate(angle * Math.PI / 180);
+                ctx.translate(-outputImage.height, 0);
+            } else if (angle === 180) {
+                ctx.rotate(angle * Math.PI / 180);
+                ctx.translate(-outputImage.width, -outputImage.height);
+            }
+
+            ctx.drawImage(inputImage, 0, 0);
+
+            inputImage.src = outputImage.toDataURL();
+
+            rotateServerImage(angle);
+
+        }
+
+    </script>
+
+</html>
