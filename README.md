@@ -45,6 +45,16 @@ Discover QuickSort Gallery – your go-to tool for swift image management. Effor
 
 Access the tool on port 3000 via a web server.
 
+
+### Keyboard controls
+
+If you call up the website on a PC, you can also sort the images using the keyboard.
+- Left arrow key: Previous image
+- Right arrow key: Next image
+- Up arrow key: Add picture to favorites
+- Backspace or Delete key: Delete image
+
+
 ------
 
 **QuickSort Gallery – Your smart solution for organizing and managing photos effortlessly!**
